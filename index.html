@@ -1,1 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Reelmind Corp | FurrArmy Command Terminal</title>
+<style>
+/* ======== General Body & Background ======== */
+body {
+    font-family: "Segoe UI", sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: black;
+    color: #00ffcc;
+}
+.background {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle,#02111b,#000000);
+    animation: pulse 6s infinite;
+}
+@keyframes pulse {
+    0% {filter: brightness(1);}
+    50% {filter: brightness(1.3);}
+    100% {filter: brightness(1);}
+}
 
+/* ======== Login Panel ======== */
+.login-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(20,20,30,0.85);
+    padding: 40px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 40px cyan;
+    text-align: center;
+}
+.login-panel h1 {
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    color: #00ffff;
+}
+.login-panel h2 {
+    margin: 0 0 20px 0;
+    font-size: 16px;
+    color: #00cccc;
+}
+.login-panel input {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    width: 220px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+}
+.login-panel button {
+    padding: 10px 20px;
+    background: #00e5ff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+}
+.login-panel p {
+    color: #ff5555;
+    margin-top: 10px;
+}
+
+/* ======== Terminal Panel ======== */
+.hidden { display: none; }
+#terminal {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    height: 80%;
+    background: #000;
+    border: 2px solid cyan;
+    padding: 20px;
+    overflow-y: auto;
+    white-space: pre-line;
+    font-family: "Consolas", monospace;
+    font-size: 14px;
+    box-shadow: 0 0 20px cyan;
+}
+</style>
+</head>
+<body>
+
+<div class="background"></div>
+
+<!-- ======== Login Panel ======== -->
+<div class="login-panel">
+    <h1>REELMIND CORP</h1>
+    <h2>FurrArmy Command Terminal</h2>
+
+    <input type="text" id="user" placeholder="Operator ID">
+    <input type="password" id="pass" placeholder="Access Key">
+    <button onclick="login()">ACCESS TERMINAL</button>
+
+    <p id="status"></p>
+</div>
+
+<!-- ======== Terminal Panel ======== -->
+<div id="terminal" class="hidden">
+    <h2>Command Terminal</h2>
+    <pre id="output"></pre>
+</div>
+
+<script>
+function login(){
+    let user = document.getElementById("user").value;
+    let pass = document.getElementById("pass").value;
+
+    if(user === "admin" && pass === "reelmind"){
+        document.querySelector(".login-panel").style.display="none";
+        document.getElementById("terminal").classList.remove("hidden");
+        boot();
+    } else {
+        document.getElementById("status").innerText="ACCESS DENIED";
+    }
+}
+
+function boot(){
+    let lines = [
+        "Connecting to Reelmind Servers...",
+        "Authenticating Operator...",
+        "Loading FurrArmy Systems...",
+        "Initializing Command Terminal...",
+        "Access Granted."
+    ];
+
+    let output = document.getElementById("output");
+    let i=0;
+
+    let interval=setInterval(()=>{
+        output.innerHTML += lines[i] + "\n";
+        i++;
+        if(i>=lines.length) clearInterval(interval);
+    },700);
+}
+</script>
+
+</body>
+</html>
