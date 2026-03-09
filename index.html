@@ -89,6 +89,25 @@ body {
     font-size: 14px;
     box-shadow: 0 0 20px cyan;
 }
+
+/* ======== Document Buttons ======== */
+.doc-buttons {
+    margin-top: 20px;
+}
+.doc-buttons button {
+    margin: 5px;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background: #00e5ff;
+    color: black;
+    transition: transform 0.1s;
+}
+.doc-buttons button:hover {
+    transform: scale(1.05);
+}
 </style>
 </head>
 <body>
@@ -111,16 +130,106 @@ body {
 <div id="terminal" class="hidden">
     <h2>Command Terminal</h2>
     <pre id="output"></pre>
+    <div class="doc-buttons hidden" id="docButtons">
+        <button onclick="showDocument('doc1')">Document 1: CODE GREEN</button>
+        <button onclick="showDocument('doc2')">Document 2: CODE ORANGE</button>
+        <button onclick="showDocument('doc3')">Document 3: CODE YELLOW</button>
+        <button onclick="showDocument('doc4')">Document 4: CODE RED</button>
+        <button onclick="showDocument('doc5')">Document 5: CODE BLACK</button>
+    </div>
 </div>
 
 <script>
+const documents = {
+    doc1: `
+🟢 CODE GREEN
+Normal Operation Status
+
+Classification: Public Operational Level
+
+📜 Official Definition
+
+Code Green represents:
+Full operational stability.
+No active threat detected.
+All divisions functioning normally.
+It is the default state of the Furr Army.
+...
+🕯 Lore Meaning of Code Green
+
+Code Green exists because of a lesson learned early:
+Before structured alert levels, there was confusion.
+Some divisions reacted too quickly.
+Others reacted too late.
+Code Green was formally established as:
+A defined baseline.
+A clear starting point.
+A measurable state of stability.
+Without Green… there is no escalation ladder.
+`,
+
+    doc2: `
+🟠 CODE ORANGE
+Investigation Status
+“Something Is Wrong.”
+
+🔎 Activation Triggers:
+Suspicious activity reports
+Intelligence inconsistencies
+Internal behavior anomalies
+Unidentified digital signals
+Minor perimeter breach
+
+🛡 Effects:
+FAIA launches active investigation
+FAISD increases internal observation
+GSP shifts to tactical standby (not full mobilization)
+...
+`,
+
+    doc3: `
+🟡 CODE YELLOW
+Elevated Readiness
+“Prepare to Move.”
+...
+`,
+
+    doc4: `
+🔴 CODE RED
+Active Threat State
+“Engage.”
+...
+`,
+
+    doc5: `
+⚫ CODE BLACK
+Critical Compromise
+“Contain or Collapse.”
+...
+🧩 Escalation Flow
+🟢 Green – Stable
+🟠 Orange – Investigation
+🟡 Yellow – Elevated Readiness
+🔴 Red – Active Threat
+⚫ Black – Critical Compromise
+⚠ SD – Pre-Final Defense
+☢ Warhead – Last Resort
+🔥 Lore Connection
+The most dangerous level historically? Not Red. Not Black. Orange.
+Because Orange is where someone knows something is wrong…
+But no one knows how bad it truly is.
+And sometimes… The difference between Orange and Black is one decision.
+`
+};
+
 function login(){
     let user = document.getElementById("user").value;
     let pass = document.getElementById("pass").value;
 
     if(user === "admin" && pass === "reelmind"){
         document.querySelector(".login-panel").style.display="none";
-        document.getElementById("terminal").classList.remove("hidden");
+        const terminal = document.getElementById("terminal");
+        terminal.classList.remove("hidden");
         boot();
     } else {
         document.getElementById("status").innerText="ACCESS DENIED";
@@ -142,8 +251,18 @@ function boot(){
     let interval=setInterval(()=>{
         output.innerHTML += lines[i] + "\n";
         i++;
-        if(i>=lines.length) clearInterval(interval);
+        if(i>=lines.length){
+            clearInterval(interval);
+            // show document buttons after boot
+            document.getElementById("docButtons").classList.remove("hidden");
+        }
     },700);
+}
+
+// Show selected document in terminal
+function showDocument(doc){
+    const output = document.getElementById("output");
+    output.innerHTML = documents[doc];
 }
 </script>
 
