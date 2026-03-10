@@ -3,268 +3,344 @@
 <head>
 <meta charset="UTF-8">
 <title>Reelmind Corp | FurrArmy Command Terminal</title>
+
 <style>
-body {
-    font-family: "Segoe UI", sans-serif;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background: black;
-    color: #00ffcc;
+
+body{
+font-family:"Segoe UI",sans-serif;
+margin:0;
+padding:0;
+overflow:hidden;
+background:black;
+color:#00ffcc;
 }
-.background {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle,#02111b,#000000);
-    animation: pulse 6s infinite;
+
+.background{
+position:fixed;
+width:100%;
+height:100%;
+background:radial-gradient(circle,#02111b,#000);
+animation:pulse 6s infinite;
 }
-@keyframes pulse {
-    0% {filter: brightness(1);}
-    50% {filter: brightness(1.3);}
-    100% {filter: brightness(1);}
+
+@keyframes pulse{
+0%{filter:brightness(1);}
+50%{filter:brightness(1.3);}
+100%{filter:brightness(1);}
 }
-.login-panel {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(20,20,30,0.85);
-    padding: 40px;
-    border-radius: 12px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 40px cyan;
-    text-align: center;
+
+/* LOGIN */
+
+.login-panel{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:rgba(20,20,30,0.85);
+padding:40px;
+border-radius:12px;
+backdrop-filter:blur(10px);
+box-shadow:0 0 40px cyan;
+text-align:center;
 }
-.login-panel h1 { margin: 0 0 10px 0; font-size: 28px; color: #00ffff; }
-.login-panel h2 { margin: 0 0 20px 0; font-size: 16px; color: #00cccc; }
-.login-panel input { display: block; margin: 10px auto; padding: 10px; width: 220px; border: none; border-radius: 6px; font-size: 14px; }
-.login-panel button { padding: 10px 20px; background: #00e5ff; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 10px; }
-.login-panel p { color: #ff5555; margin-top: 10px; }
-.hidden { display: none; }
-#terminal {
-    position: absolute;
-    top: 10%;
-    left: 10%;
-    width: 80%;
-    height: 80%;
-    background: #000;
-    border: 2px solid cyan;
-    padding: 20px;
-    overflow-y: auto;
-    white-space: pre-line;
-    font-family: "Consolas", monospace;
-    font-size: 14px;
-    box-shadow: 0 0 20px cyan;
+
+.login-panel input{
+display:block;
+margin:10px auto;
+padding:10px;
+width:220px;
+border:none;
+border-radius:6px;
 }
-.doc-buttons { margin-top: 20px; }
-.doc-buttons button {
-    margin: 5px; padding: 8px 16px; font-size: 14px; border-radius: 6px; border: none; cursor: pointer; background: #00e5ff; color: black; transition: transform 0.1s;
+
+.login-panel button{
+padding:10px 20px;
+background:#00e5ff;
+border:none;
+border-radius:6px;
+cursor:pointer;
 }
-.doc-buttons button:hover { transform: scale(1.05); }
+
+.hidden{
+display:none;
+}
+
+/* BOOT SCREEN */
+
+#bootScreen{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:400px;
+text-align:center;
+color:#00ffff;
+}
+
+.progress-container{
+width:100%;
+height:25px;
+background:#111;
+border:2px solid cyan;
+border-radius:6px;
+overflow:hidden;
+margin-top:20px;
+}
+
+#progressBar{
+width:0%;
+height:100%;
+background:linear-gradient(90deg,#00ffff,#00ffaa);
+transition:width 1s linear;
+}
+
+/* TERMINAL */
+
+#terminal{
+position:absolute;
+top:10%;
+left:10%;
+width:80%;
+height:80%;
+background:#000;
+border:2px solid cyan;
+padding:20px;
+overflow-y:auto;
+white-space:pre-line;
+font-family:"Consolas",monospace;
+font-size:14px;
+box-shadow:0 0 20px cyan;
+}
+
+.doc-buttons{
+margin-top:20px;
+}
+
+.doc-buttons button{
+margin:5px;
+padding:8px 16px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+background:#00e5ff;
+color:black;
+}
+
 </style>
 </head>
+
 <body>
 
 <div class="background"></div>
 
+<!-- LOGIN -->
+
 <div class="login-panel">
-    <h1>REELMIND CORP</h1>
-    <h2>FurrArmy Command Terminal</h2>
-    <input type="text" id="user" placeholder="Operator ID">
-    <input type="password" id="pass" placeholder="Access Key">
-    <button onclick="login()">ACCESS TERMINAL</button>
-    <p id="status"></p>
+<h1>REELMIND CORP</h1>
+<h2>FurrArmy Command Terminal</h2>
+
+<input id="user" placeholder="Operator ID">
+<input type="password" id="pass" placeholder="Access Key">
+
+<button onclick="login()">ACCESS TERMINAL</button>
+
+<p id="status"></p>
 </div>
 
+<!-- BOOT -->
+
+<div id="bootScreen" class="hidden">
+
+<h2>Initializing FurrArmy Command Systems</h2>
+
+<div class="progress-container">
+<div id="progressBar"></div>
+</div>
+
+<p id="bootText">Starting boot sequence...</p>
+
+</div>
+
+<!-- TERMINAL -->
+
 <div id="terminal" class="hidden">
-    <h2>Command Terminal</h2>
-    <pre id="output"></pre>
-    <div class="doc-buttons hidden" id="docButtons">
-        <button onclick="showDocument('doc1')">Document 1: CODE GREEN</button>
-        <button onclick="showDocument('doc2')">Document 2: CODE ORANGE</button>
-        <button onclick="showDocument('doc3')">Document 3: CODE YELLOW</button>
-        <button onclick="showDocument('doc4')">Document 4: CODE RED</button>
-        <button onclick="showDocument('doc5')">Document 5: CODE BLACK</button>
-        <button onclick="showDocument('doc6')">Document 6: PROTOCOL WARHEAD</button>
-    </div>
+
+<h2>Command Terminal</h2>
+
+<pre id="output"></pre>
+
+<div id="docButtons" class="doc-buttons hidden">
+
+<button onclick="showDocument('doc1')">Document 1: CODE GREEN</button>
+<button onclick="showDocument('doc2')">Document 2: CODE ORANGE</button>
+<button onclick="showDocument('doc3')">Document 3: CODE YELLOW</button>
+<button onclick="showDocument('doc4')">Document 4: CODE RED</button>
+<button onclick="showDocument('doc5')">Document 5: CODE BLACK</button>
+<button onclick="showDocument('doc6')">Document 6: PROTOCOL WARHEAD</button>
+
+</div>
+
 </div>
 
 <script>
+
+/* DOCUMENT DATABASE */
+
 const documents = {
-doc1: `
-🟢 CODE GREEN
+
+doc1:`🟢 CODE GREEN
 Normal Operation Status
 
-Classification: Public Operational Level
-
-📜 Official Definition
-
-Code Green represents:
 Full operational stability.
-No active threat detected.
-All divisions functioning normally.
-It is the default state of the Furr Army.
-...
-🕯 Lore Meaning of Code Green
+All divisions functioning normally.`,
 
-Code Green exists because of a lesson learned early:
-Before structured alert levels, there was confusion.
-Some divisions reacted too quickly.
-Others reacted too late.
-Code Green was formally established as:
-A defined baseline.
-A clear starting point.
-A measurable state of stability.
-Without Green… there is no escalation ladder.
-`,
-doc2: `
-🟠 CODE ORANGE
+doc2:`🟠 CODE ORANGE
 Investigation Status
-“Something Is Wrong.”
 
-🔎 Activation Triggers:
-Suspicious activity reports
-Intelligence inconsistencies
-Internal behavior anomalies
-Unidentified digital signals
-Minor perimeter breach
+Suspicious activity detected.
+FAIA investigation active.`,
 
-🛡 Effects:
-FAIA launches active investigation
-FAISD increases internal observation
-GSP shifts to tactical standby (not full mobilization)
-...
-`,
-doc3: `
-🟡 CODE YELLOW
+doc3:`🟡 CODE YELLOW
 Elevated Readiness
-“Prepare to Move.”
-...
-`,
-doc4: `
-🔴 CODE RED
-Active Threat State
-“Engage.”
-...
-`,
-doc5: `
-⚫ CODE BLACK
+
+Forces preparing for possible engagement.`,
+
+doc4:`🔴 CODE RED
+Active Threat
+
+All combat divisions mobilized.`,
+
+doc5:`⚫ CODE BLACK
 Critical Compromise
-“Contain or Collapse.”
-...
-🧩 Escalation Flow
-🟢 Green – Stable
-🟠 Orange – Investigation
-🟡 Yellow – Elevated Readiness
-🔴 Red – Active Threat
-⚫ Black – Critical Compromise
-⚠ SD – Pre-Final Defense
-☢ Warhead – Last Resort
-🔥 Lore Connection
-The most dangerous level historically? Not Red. Not Black. Orange.
-Because Orange is where someone knows something is wrong…
-But no one knows how bad it truly is.
-And sometimes… The difference between Orange and Black is one decision.
-`,
-doc6: `
-☢ PROTOCOL WARHEAD
-Strategic Extreme Response Directive
 
-Classification: BLACK LEVEL – OMEGA ACCESS ONLY
+Containment failure risk.`,
 
-📜 Official Description
+doc6:`☢ PROTOCOL WARHEAD
 
-Protocol Warhead is the Furr Army’s last-resort escalation protocol.
-It is not activated during normal combat.
-It is not triggered during Code Red.
-It exists for one purpose: Total neutralization of an unstoppable threat.
+Strategic last-resort response.
 
-⚠ Activation Conditions
-- Base integrity falls below 40%
-- Command structure is critically compromised
-- Hostile forces gain core facility access
-- Intelligence confirms irreversible breach
-- Code Black fails to contain threat
-- Only AFC High Command AND Director-General of FAIA together can authorize it (dual confirmation required)
+"If We Fall — We Fall On Our Terms."`
 
-🛡 Operational Effects
-- All divisions receive Priority Omega signal
-- Evacuation corridors open for essential personnel
-- Data purge of classified archives begins
-- FAISD initiates loyalty lockdown protocol
-- FATD secures final perimeter
-- FAHT prepares extraction of Command
-- 4th AFC establishes air exclusion zone
-- A final containment solution is prepared
-
-🔒 What “Warhead” Means
-Officially: Strategic Overload Containment System
-Unofficially: Controlled self-neutralization system embedded within the core infrastructure
-Prevents capture of classified systems, enemy control of high-energy tech, or weaponization
-
-🕶 The Red Room Decision
-- Two biometric confirmations
-- Triple encryption override
-- Final verbal confirmation code
-- Cancellation window: 120 seconds
-
-📖 The Almost Activation
-- Collapse Event – Version 1.0.3
-- Reactor instability + hostile incursion
-- FAIA predicted 63% failure probability
-- Countdown reached 37 seconds
-- GSP regained control; protocol aborted
-
-☢ Psychological Effect
-- Only select HR ranks know it exists
-- Ensures no reckless escalation, no surrender, no uncontrolled takeover
-
-🔥 Official Tagline
-“If We Fall — We Fall On Our Terms.”
-`
 };
 
-function login(){
-    let user = document.getElementById("user").value;
-    let pass = document.getElementById("pass").value;
 
-    if(user === "admin" && pass === "reelmind"){
-        document.querySelector(".login-panel").style.display="none";
-        const terminal = document.getElementById("terminal");
-        terminal.classList.remove("hidden");
-        boot();
-    } else {
-        document.getElementById("status").innerText="ACCESS DENIED";
-    }
+/* LOGIN */
+
+function login(){
+
+let user=document.getElementById("user").value;
+let pass=document.getElementById("pass").value;
+
+if(user==="admin" && pass==="reelmind"){
+
+document.querySelector(".login-panel").style.display="none";
+
+document.getElementById("bootScreen").classList.remove("hidden");
+
+startBoot();
+
+}else{
+
+document.getElementById("status").innerText="ACCESS DENIED";
+
 }
+
+}
+
+
+/* BOOT SEQUENCE */
+
+function startBoot(){
+
+let progress=0;
+let bar=document.getElementById("progressBar");
+let text=document.getElementById("bootText");
+
+let messages=[
+"Connecting to Reelmind Servers...",
+"Initializing Security Protocols...",
+"Loading FurrArmy Divisions...",
+"Checking FAIA Intelligence Network...",
+"Starting Command Terminal..."
+];
+
+let messageIndex=0;
+
+let interval=setInterval(()=>{
+
+progress+=1;
+
+bar.style.width=progress+"%";
+
+if(progress%20===0 && messageIndex<messages.length){
+
+text.innerText=messages[messageIndex];
+messageIndex++;
+
+}
+
+if(progress>=100){
+
+clearInterval(interval);
+
+document.getElementById("bootScreen").style.display="none";
+
+document.getElementById("terminal").classList.remove("hidden");
+
+boot();
+
+}
+
+},600);
+
+}
+
+
+/* TERMINAL BOOT */
 
 function boot(){
-    let lines = [
-        "Connecting to Reelmind Servers...",
-        "Authenticating Operator...",
-        "Loading FurrArmy Systems...",
-        "Initializing Command Terminal...",
-        "Access Granted."
-    ];
 
-    let output = document.getElementById("output");
-    let i=0;
+let lines=[
 
-    let interval = setInterval(()=>{
-        output.innerHTML += lines[i] + "\n";
-        i++;
-        if(i>=lines.length){
-            clearInterval(interval);
-            document.getElementById("docButtons").classList.remove("hidden");
-        }
-    },700);
+"Connecting to Reelmind Servers...",
+"Authenticating Operator...",
+"Loading FurrArmy Systems...",
+"Initializing Command Terminal...",
+"Access Granted."
+
+];
+
+let output=document.getElementById("output");
+
+let i=0;
+
+let interval=setInterval(()=>{
+
+output.innerHTML+=lines[i]+"\n";
+
+i++;
+
+if(i>=lines.length){
+
+clearInterval(interval);
+
+document.getElementById("docButtons").classList.remove("hidden");
+
 }
+
+},700);
+
+}
+
+
+/* DOCUMENT VIEW */
 
 function showDocument(doc){
-    const output = document.getElementById("output");
-    output.innerHTML = documents[doc];
+
+document.getElementById("output").innerText=documents[doc];
+
 }
+
 </script>
 
 </body>
