@@ -126,6 +126,42 @@ background:#00e5ff;
 color:black;
 }
 
+/* LOCKDOWN SCREEN */
+
+#lockdownScreen{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+color:#ff3333;
+font-size:24px;
+text-shadow:0 0 20px red;
+animation:flash 1s infinite;
+}
+
+@keyframes flash{
+0%{opacity:1;}
+50%{opacity:0.4;}
+100%{opacity:1;}
+}
+
+.lock-bar{
+width:400px;
+height:25px;
+border:2px solid red;
+background:#200;
+margin-top:20px;
+overflow:hidden;
+}
+
+#lockFill{
+width:0%;
+height:100%;
+background:red;
+transition:width 1s linear;
+}
+
 </style>
 </head>
 
@@ -182,7 +218,27 @@ color:black;
 
 </div>
 
+<!-- LOCKDOWN -->
+
+<div id="lockdownScreen" class="hidden">
+
+<h1>⚠ SECURITY LOCKDOWN ⚠</h1>
+
+<p>Unauthorized Access Detected</p>
+
+<div class="lock-bar">
+<div id="lockFill"></div>
+</div>
+
+<p>System reset in <span id="countdown">20</span> seconds</p>
+
+</div>
+
 <script>
+
+/* LOGIN ATTEMPTS */
+
+let attempts = 0;
 
 /* DOCUMENT DATABASE */
 
@@ -190,37 +246,25 @@ const documents = {
 
 doc1:`🟢 CODE GREEN
 Normal Operation Status
-
-Full operational stability.
-All divisions functioning normally.`,
+Full operational stability.`,
 
 doc2:`🟠 CODE ORANGE
 Investigation Status
-
-Suspicious activity detected.
 FAIA investigation active.`,
 
 doc3:`🟡 CODE YELLOW
 Elevated Readiness
-
-Forces preparing for possible engagement.`,
+Forces preparing.`,
 
 doc4:`🔴 CODE RED
 Active Threat
-
 All combat divisions mobilized.`,
 
 doc5:`⚫ CODE BLACK
-Critical Compromise
-
-Containment failure risk.`,
+Critical Compromise`,
 
 doc6:`☢ PROTOCOL WARHEAD
-
-Strategic last-resort response.
-
 "If We Fall — We Fall On Our Terms."`
-
 };
 
 
@@ -234,16 +278,53 @@ let pass=document.getElementById("pass").value;
 if(user==="admin" && pass==="reelmind"){
 
 document.querySelector(".login-panel").style.display="none";
-
 document.getElementById("bootScreen").classList.remove("hidden");
-
 startBoot();
 
 }else{
 
-document.getElementById("status").innerText="ACCESS DENIED";
+attempts++;
+
+document.getElementById("status").innerText=
+"ACCESS DENIED ("+attempts+"/3)";
+
+if(attempts>=3){
+triggerLockdown();
+}
 
 }
+
+}
+
+
+/* LOCKDOWN */
+
+function triggerLockdown(){
+
+document.querySelector(".login-panel").style.display="none";
+
+document.getElementById("lockdownScreen").classList.remove("hidden");
+
+let fill=document.getElementById("lockFill");
+let countdown=document.getElementById("countdown");
+
+let progress=0;
+let time=20;
+
+let interval=setInterval(()=>{
+
+progress+=5;
+fill.style.width=progress+"%";
+
+time--;
+countdown.innerText=time;
+
+if(time<=0){
+clearInterval(interval);
+location.reload();
+}
+
+},1000);
 
 }
 
@@ -268,15 +349,13 @@ let messageIndex=0;
 
 let interval=setInterval(()=>{
 
-progress+=1;
+progress++;
 
 bar.style.width=progress+"%";
 
 if(progress%20===0 && messageIndex<messages.length){
-
 text.innerText=messages[messageIndex];
 messageIndex++;
-
 }
 
 if(progress>=100){
@@ -301,13 +380,11 @@ boot();
 function boot(){
 
 let lines=[
-
 "Connecting to Reelmind Servers...",
 "Authenticating Operator...",
 "Loading FurrArmy Systems...",
 "Initializing Command Terminal...",
 "Access Granted."
-
 ];
 
 let output=document.getElementById("output");
@@ -336,9 +413,7 @@ document.getElementById("docButtons").classList.remove("hidden");
 /* DOCUMENT VIEW */
 
 function showDocument(doc){
-
 document.getElementById("output").innerText=documents[doc];
-
 }
 
 </script>
