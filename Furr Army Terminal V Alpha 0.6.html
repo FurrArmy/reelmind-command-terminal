@@ -1,0 +1,2887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reelmind Corp | FurrArmy Command Terminal</title>
+
+    <style>
+
+        body {
+            font-family: "Segoe UI",sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: black;
+            color: #00ffcc;
+        }
+
+        .background {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle,#02111b,#000);
+            animation: pulse 6s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                filter: brightness(1);
+            }
+
+            50% {
+                filter: brightness(1.3);
+            }
+
+            100% {
+                filter: brightness(1);
+            }
+        }
+
+        .login-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            background: rgba(20,20,30,0.85);
+            padding: 40px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 40px cyan;
+            text-align: center;
+        }
+
+            .login-panel input {
+                display: block;
+                margin: 10px auto;
+                padding: 10px;
+                width: 220px;
+                border: none;
+                border-radius: 6px;
+            }
+
+            .login-panel button {
+                padding: 10px 20px;
+                background: #00e5ff;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+
+        .hidden {
+            display: none;
+        }
+
+        #bootScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            width: 400px;
+            text-align: center;
+            color: #00ffff;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 25px;
+            background: #111;
+            border: 2px solid cyan;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        #progressBar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg,#00ffff,#00ffaa);
+            transition: width 1s linear;
+        }
+
+        #terminal {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background: #000;
+            border: 2px solid cyan;
+            padding: 20px;
+            overflow-y: auto;
+            white-space: pre-line;
+            font-family: "Consolas",monospace;
+            font-size: 14px;
+            box-shadow: 0 0 20px cyan;
+        }
+
+        .doc-buttons {
+            margin-top: 20px;
+        }
+
+            .doc-buttons button {
+                margin: 5px;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                background: #00e5ff;
+                color: black;
+            }
+
+        #lockdownScreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            text-align: center;
+            color: #ff3333;
+            font-size: 24px;
+            text-shadow: 0 0 20px red;
+            animation: flash 1s infinite;
+        }
+
+        @keyframes flash {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .lock-bar {
+            width: 400px;
+            height: 25px;
+            border: 2px solid red;
+            background: #200;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        #lockFill {
+            width: 0%;
+            height: 100%;
+            background: red;
+            transition: width 1s linear;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="background"></div>
+
+    <div class="login-panel">
+        <h1>REELMIND CORP</h1>
+        <h2>FurrArmy Command Terminal</h2>
+
+        <input id="user" placeholder="Operator ID">
+        <input type="password" id="pass" placeholder="Access Key">
+
+        <button onclick="login()">ACCESS TERMINAL</button>
+
+        <p id="status"></p>
+    </div>
+
+    <div id="bootScreen" class="hidden">
+
+        <h2>Initializing FurrArmy Command Systems</h2>
+
+        <div class="progress-container">
+            <div id="progressBar"></div>
+        </div>
+
+        <p id="bootText">Starting boot sequence...</p>
+
+    </div>
+
+    <div id="terminal" class="hidden">
+
+        <h2>Command Terminal</h2>
+
+<pre id="output"></pre>
+
+<div id="docButtons" class="doc-buttons hidden">
+
+    <button onclick="showDocument('doc1')" data-doc="doc1">Document 1: CODE GREEN</button>
+    <button onclick="showDocument('doc2')" data-doc="doc2">Document 2: CODE ORANGE</button>
+    <button onclick="showDocument('doc3')" data-doc="doc3">Document 3: CODE YELLOW</button>
+    <button onclick="showDocument('doc4')" data-doc="doc4">Document 4: CODE RED</button>
+    <button onclick="showDocument('doc5')" data-doc="doc5">Document 5: CODE BLACK</button>
+    <button onclick="showDocument('doc6')" data-doc="doc6">Document 6: PROTOCOL WARHEAD</button>
+    <button onclick="showDocument('doc7')" data-doc="doc7">Document 7: Guest infos</button>
+    <button onclick="showDocument('doc8')" data-doc="doc8">Document 8: Protocol SD</button>
+    <button onclick="showDocument('doc9')" data-doc="doc9">Document 9: Rank Tree LR 12th 6th 4th GSP</button>
+    <button onclick="showDocument('doc10')" data-doc="doc10">Document 10: Rank Tree MR 12th 6th 4th GSP</button>
+    <button onclick="showDocument('doc11')" data-doc="doc11">Document 11: Rank Tree HR 12th 6th 4th GSP</button>
+    <button onclick="showDocument('doc12')" data-doc="doc12">Document 12: Rank Tree TDR 12th 6th 4th GSP</button>
+    <button onclick="showDocument('doc13')" data-doc="doc13">Document 13: Rank Tree MP LR</button>
+    <button onclick="showDocument('doc14')" data-doc="doc14">Document 14: Rank Tree MP MR</button>
+    <button onclick="showDocument('doc15')" data-doc="doc15">Document 15: Rank Tree MP HR</button>
+    <button onclick="showDocument('doc16')" data-doc="doc16">Document 16: Rank Tree MP TC</button>
+    <button onclick="showDocument('doc17')" data-doc="doc17">Document 17: MP Authority overview</button>
+    <button onclick="showDocument('doc18')" data-doc="doc18">Document 18: Applying For Jduge  Military Court Unit</button>
+    <button onclick="showDocument('doc19')" data-doc="doc19">Document 19: FAMCU COURT SYSTEM</button>
+    <button onclick="showDocument('doc20')" data-doc="doc20">Document 20: FAJD Infomation</button>
+    <button onclick="showDocument('doc21')" data-doc="doc21">Document 21: Classifed Document 1</button>
+    <button onclick="showDocument('doc22')" data-doc="doc22">Document 22: Classifed Document 2</button>
+    <button onclick="showDocument('doc23')" data-doc="doc23">Document 23: Classifed Document 3</button>
+    <button onclick="showDocument('doc24')" data-doc="doc24">Document 24: Classifed Document 4</button>
+    <button onclick="showDocument('doc25')" data-doc="doc25">Document 25: Junior High Command</button>
+    <button onclick="showDocument('doc26')" data-doc="doc26">Document 26: Senior High Command</button>
+
+
+</div>
+
+    </div>
+
+    <div id="lockdownScreen" class="hidden">
+
+        <h1>⚠ SECURITY LOCKDOWN ⚠</h1>
+
+        <p>Unauthorized Access Detected</p>
+
+        <div class="lock-bar">
+            <div id="lockFill"></div>
+        </div>
+
+        <p>System reset in <span id="countdown">20</span> seconds</p>
+
+    </div>
+
+    <script>
+
+        /* LOGIN ATTEMPTS */
+
+        let attempts = 0;
+        let currentUser = null;
+
+        /* USER DATABASE */
+
+        const users = {
+
+            Mike: {
+                password: "Lt.Mike",
+                rank: "High Marshal of Unified Forces",
+                team: "Grand High Command",
+                clearance: 10
+            },
+
+            Travis: {
+                password: "Travis Reelmind",
+                rank: "Supreme Commander of the Furr Army",
+                team: "Grand High Command",
+                clearance: 10
+            },
+
+            Right_Hand: {
+                password: "R_H",
+                rank: "Deputy Supreme Commander",
+                team: "Grand High Command",
+                clearance: 10
+            },
+
+            SHC: {
+                password: "SHC",
+                rank: "High Command Officer",
+                team: "Senior High Command",
+                clearance: 9
+            },
+
+            JHC: {
+                password: "JHC",
+                rank: "Deputy Operations Officer",
+                team: "Junior High Command ",
+                clearance: 8
+            },
+
+            V_O_R: {
+                password: "V.O.R",
+                rank: "Shadow Candidate",
+                team: "Vanguard Operations Regiment",
+                clearance: 7
+            },
+
+            FAIA: {
+                password: "IA",
+                rank: "Intelligence Recruit",
+                team: "Furr Army Intelligence Agency",
+                clearance: 6.5
+            },
+
+            FAISD: {
+                password: "ISD",
+                rank: "ISD Recruit",
+                team: "Furr Army Internal Service Division",
+                clearance: 6
+            },
+
+            FAJD: {
+                password: "JD",
+                rank: "Journalist Recruit",
+                team: "Furr Army Journalist Division",
+                clearance: 5
+            },
+
+            FAMCU_HR: {
+                password: "4.9",
+                rank: "Senior Court Judge",
+                team: "Furr Army Military Court Unit",
+                clearance: 4.9
+            }, 
+
+            FAMCU_MR: {
+                password: "4.8",
+                rank: "Military Judge",
+                team: "Furr Army Military Court Unit",
+                clearance: 4.9
+            }, 
+
+            MP_TC: {
+                password: "4.5",
+                rank: "MP Instructor Candidate [MP TC]",
+                team: "MP Trainer Command ",
+                clearance: 4.5
+            }, 
+
+            MP_L4_3: {
+                password: "4.3",
+                rank: "Provost Officer [MP HR]",
+                team: "FAMPD  [Furr Army Military Police Divsion]",
+                clearance: 4.3
+            }, 
+
+            MP_L4_2: {
+                password: "4.2",
+                rank: "MP Sergeant [MP MR]",
+                team: "FAMPD  [Furr Army Military Police Divsion]",
+                clearance: 4.2
+            }, 
+
+            MP_L4: {
+                password: "04",
+                rank: "MP Reciut [MP LR]",
+                team: "FAMPD  [Furr Army Military Police Divsion]",
+                clearance: 4
+            },
+
+            Test_L3_5: {
+                password: "3.5",
+                rank: "Heli Instructor Cadet [TDR]",
+                team: "12th FAHT  [Furr Army Helicopter Troop Trainer Division]",
+                clearance: 3.5
+            },
+
+            Test_L3: {
+                password: "03",
+                rank: "Company Commander [HR]",
+                team: "6th FATD  [Furr Army Tand Division]",
+                clearance: 3
+            },
+
+            Test_L2: {
+                password: "02",
+                rank: "Jet Pilot [MR]",
+                team: "4th AFC  [Air Furrs Cavalry]",
+                clearance: 2
+            },
+
+            Test_L1: {
+                password: "01",
+                rank: "Recruit [LR]",
+                team: "Ground Service Personnel",
+                clearance: 1
+            },
+
+            Guest: {
+                password: "Guest",
+                rank: "Guest",
+                team: "Guest",
+                clearance: 0
+            }
+
+        };
+
+        function updateDocumentButtons() {
+
+            const buttons = document.querySelectorAll("#docButtons button");
+
+            buttons.forEach(button => {
+
+                const docName = button.getAttribute("data-doc");
+                const doc = documents[docName];
+
+                if (currentUser.clearance >= doc.level) {
+
+                    button.style.display = "inline-block";
+
+                } else {
+
+                    button.style.display = "none";
+
+                }
+
+            });
+
+        }
+
+
+        /* DOCUMENT DATABASE */
+
+        const documents = {
+
+            doc1: {
+                level: 1, text: `🟢 CODE GREEN
+Normal Operation Status
+Classification: Level 1
+
+📜 Official Definition
+
+Code Green represents:
+
+Full operational stability.
+No active threat detected.
+All divisions functioning normally.
+
+It is the default state of the Furr Army.
+
+But “normal” does not mean unprepared.
+
+🛡 Operational Conditions Under Code Green
+
+When Code Green is active:
+
+GSP conducts standard patrol & training
+
+6th FATD remains in maintenance or drill rotation
+
+12th FAHT operates routine transport & aerial checks
+
+4th AFC performs scheduled air exercises
+
+MP handles regular enforcement
+
+Classifed
+
+Classifed
+
+No elevated restrictions.
+No lockdown measures.
+
+🧠 Hidden Layer (What Most Don’t Know)
+
+Even during Code Green:
+
+Classifed
+
+Classifed
+
+Classifed
+
+Classifed
+The Army is calm.
+
+But never unaware.
+
+🕯 Lore Meaning of Code Green
+
+Code Green exists because of a lesson learned early:
+
+Before structured alert levels, there was confusion.
+
+Some divisions reacted too quickly.
+Others reacted too late.
+
+So Code Green was formally established as:
+
+A defined baseline.
+
+A clear starting point.
+
+A measurable state of stability.
+
+Without Green… there is no escalation ladder.
+`},
+
+            doc2: {
+                level: 8, text: `🟠 CODE ORANGE
+Investigation Status
+“Something Is Wrong.”
+
+Classification: Level 8
+
+Code Orange is activated when a credible anomaly is detected but not yet confirmed as an active threat.
+
+🔎 Activation Triggers:
+
+Suspicious activity reports
+
+Intelligence inconsistencies
+
+Internal behavior anomalies
+
+Unidentified digital signals
+
+Minor perimeter breach
+
+🛡 Effects:
+
+FAIA launches active investigation
+
+FAISD increases internal observation
+
+GSP shifts to tactical standby (not full mobilization)
+
+MP increases patrol density
+
+Command begins restricted briefings
+
+Publicly, everything appears stable.
+
+Privately, the Army is analyzing.
+
+Code Orange is controlled tension.
+`},
+
+            doc3: {
+                level: 1, text: `🟡 CODE YELLOW
+Elevated Readiness
+“Prepare to Move.”
+
+Classification: Level 1
+
+Code Yellow follows when investigation confirms credible risk.
+
+The threat is real — but not yet active.
+
+🔎 Activation Triggers:
+
+Confirmed hostile intent
+
+External force mobilization detected
+
+Intelligence threat probability >40%
+
+Internal compromise suspected
+
+🛡 Effects:
+
+GSP prepares defensive formation
+
+6th FATD moves into pre-positioned armor zones
+
+12th FAHT on rapid deployment standby
+
+4th AFC increases aerial patrol
+
+Non-essential operations suspended
+
+Yellow is preparation without panic.
+`},
+
+            doc4: {
+                level: 2, text: `🔴 CODE RED
+Active Threat
+“Engage.”
+
+Classification: Level 2
+
+Code Red is declared when the threat becomes operational.
+
+🔎 Activation Triggers:
+
+Confirmed hostile engagement
+
+Base breach attempt
+
+Coordinated external attack
+
+Internal sabotage confirmed
+
+🛡 Effects:
+
+All divisions mobilize
+
+Airspace secured by 4th AFC
+
+Armor deployed by FATD
+
+FAHT executes rapid response
+
+MP enforces emergency security authority
+
+Classifed
+
+Classifed
+
+Code Red is not fear.
+
+It is execution.
+`},
+
+            doc5: {
+                level: 8, text: `⚫ CODE BLACK
+Critical Compromise
+“Contain or Collapse.”
+
+Classification: Level 5
+
+Code Black is rare.
+
+It means either:
+
+Core systems compromised
+
+Command chain destabilized
+
+Multiple sector breaches
+
+Strategic asset capture imminent
+
+🛡 Effects:
+
+Base enters full lockdown
+
+Section isolation protocols activated
+
+Evacuation corridors prepared
+
+SD eligibility automatically triggered
+
+Warhead authorization review begins
+
+Code Black is the edge.
+
+This is where survival doctrine takes over.
+
+🧩 Escalation Flow
+
+🟢 Green – Stable
+🟠 Orange – Investigation
+🟡 Yellow – Elevated Readiness
+🔴 Red – Active Threat
+⚫ Black – Critical Compromise
+⚠ SD – Pre-Final Defense
+☢ Warhead – Last Resort
+
+🔥 Lore Connection
+
+The most dangerous level historically?
+
+Not Red.
+
+Not Black.
+
+Orange.
+
+Because Orange is where someone knows something is wrong…
+
+But no one knows how bad it truly is.
+
+And sometimes…
+
+The difference between Orange and Black is one decision.
+`},
+
+            doc6: {
+                level: 10, text: `☢ PROTOCOL WARHEAD
+Strategic Extreme Response Directive
+
+Classification: BLACK LEVEL – Level 10 ACCESS ONLY
+
+📜 Official Description
+
+Protocol Warhead is the Furr Army’s last-resort escalation protocol.
+
+It is not activated during normal combat.
+It is not triggered during Code Red.
+
+It exists for one purpose:
+
+Total neutralization of an unstoppable threat.
+
+⚠ Activation Conditions
+
+Protocol Warhead may only be considered when:
+
+Base integrity falls below 40%
+
+Command structure is critically compromised
+
+Hostile forces gain core facility access
+
+Intelligence confirms irreversible breach
+
+Code Black fails to contain threat
+
+Only AFC High Command AND Director-General of FAIA together can authorize it.
+
+Dual confirmation required.
+
+🛡 Operational Effects
+
+Upon activation:
+
+All divisions receive Priority Omega signal
+
+Evacuation corridors open for essential personnel
+
+Data purge of classified archives begins
+
+FAISD initiates loyalty lockdown protocol
+
+FATD secures final perimeter
+
+FAHT prepares extraction of Command
+
+4th AFC establishes air exclusion zone
+
+A final containment solution is prepared.
+
+🔒 What “Warhead” Means
+
+Officially:
+
+Strategic Overload Containment System
+
+Unofficially:
+
+It refers to a controlled self-neutralization system embedded within the core infrastructure.
+
+Designed to prevent:
+
+Capture of classified systems
+
+Enemy control of high-energy technology
+
+External weaponization of Army assets
+
+If the Army cannot hold it…
+
+No one will.
+
+🕶 The Red Room Decision
+
+Inside High Command exists a secure chamber known as:
+
+The Red Room
+
+Protocol Warhead authorization requires:
+
+Two biometric confirmations
+
+Triple encryption override
+
+Final verbal confirmation code
+
+Once confirmed, cancellation window lasts 120 seconds.
+
+After that… it proceeds automatically.
+
+📖 The Almost Activation
+
+Records show Protocol Warhead was nearly activated during:
+
+The Collapse Event – Version 1.0.3
+
+A reactor instability and hostile incursion occurred simultaneously.
+
+FAIA predicted failure probability at 63%.
+
+Countdown reached 37 seconds.
+
+Then GSP regained control.
+
+The protocol was aborted.
+
+But since that day, Warhead readiness remains constant.
+
+☢ Psychological Effect
+
+Only select HR ranks even know it exists.
+
+Knowing that Warhead is real changes command decisions.
+
+It ensures:
+
+No reckless escalation
+
+No surrender scenarios
+
+No uncontrolled takeover
+
+The Army survives…
+
+Or nothing does.
+
+🔥 Official Tagline
+
+“If We Fall — We Fall On Our Terms.”
+`},
+
+            doc7: {
+                level: 0, text: ` Guest infos
+Owner:Mike  CO-Owner Travis Reelmind   Right Hand Unknown
+===================================
+     FURR ARMY VISITOR NOTICE
+===================================
+
+Welcome to a Furr Army Military Installation.
+
+You are currently inside a restricted operational zone.
+
+All visitors must follow instructions from Furr Army personnel at all times.
+
+Rules for Guests:
+
+1. Remain inside authorized visitor areas.
+2. Do not enter restricted sectors.
+3. Do not interfere with military operations.
+4. Follow all orders given by security personnel.
+5. Photography or recording may be restricted.
+
+If an emergency protocol is activated:
+
+• Remain calm
+• Follow evacuation instructions
+• Move to the nearest safe zone
+
+Failure to follow base regulations may result in removal from the facility.
+
+you can apply for
+
+12th FAHT Furr Army Helicopter Troop
+
+6th FATD Furr Army Tank Division
+
+4th AFC Air Furrs Cavalry
+
+GSP Ground Service Personnel
+
+Join The Discord Server For More Info
+
+https://discord.gg/Kfv8g3VEts
+
+Thank you for your cooperation.
+
+Grand High Command [Owner][CO-Owner][Right Hand]
+`},
+            doc8: {
+                level: 10, text: `⚠ PROTOCOL SD
+Strategic Defense Contingency Directive
+
+Classification:Level 8
+
+📜 Official Designation
+
+SD = Strategic Defense
+
+Protocol SD is activated when the Furr Army detects:
+
+Large-scale external threat buildup
+
+Confirmed coordinated attack planning
+
+Multiple divisions compromised
+
+Intelligence indicating imminent Code Red escalation
+
+It is not a public alert.
+
+It is a command-level defensive posture.
+
+🛡 Purpose of Protocol SD
+
+Protocol SD exists to:
+
+Harden all base infrastructure
+
+Lock down non-essential systems
+
+Pre-deploy heavy units
+
+Increase internal monitoring
+
+Prepare for immediate transition to Code Red or Code Black
+
+It is the final preparation stage before open conflict.
+
+🔒 Activation Authority
+
+Protocol SD may only be activated by:
+
+AFC High Command
+
+Director-General of FAIA
+
+FAISD Commander (in emergency internal threat scenario)
+
+Unauthorized activation is considered treason-level offense.
+
+🚨 Operational Changes Under SD
+
+When Protocol SD is active:
+
+6th FATD moves into defensive formation
+
+12th FAHT enters rapid standby
+
+4th AFC prepares air superiority patrol
+
+GSP shifts to tactical readiness
+
+MP increases internal patrol frequency
+
+FAIA enters continuous surveillance cycle
+
+FAISD begins integrity audits
+
+All divisions operate under elevated readiness.
+
+🕶 Internal Effect
+
+Under SD:
+
+Promotions freeze
+
+Base access is restricted
+
+Communication channels monitored
+
+High-ranking officers reviewed
+
+Trust is verified.
+
+⚫ The Hidden Clause
+
+Classified Appendix SD-Black states:
+
+If three divisions report structural compromise simultaneously,
+
+Protocol SD automatically escalates to:
+
+Protocol Omega.
+
+Only High Command knows what Omega fully entails.
+
+🔥 Lore Hook (Optional Story Element)
+
+Protocol SD was first enacted during:
+
+The Shadow Alignment Incident
+
+An external group synchronized digital interference with a physical reconnaissance attempt.
+
+FAIA predicted the strike.
+
+SD was activated 12 minutes before contact.
+
+The base never fell.
+
+But records show… someone inside delayed the report.
+
+FAISD never released the final findings.
+
+🎖 Official Tagline
+
+“Prepare Before They Strike.”
+`},
+
+            doc9: {
+                level: 1, text: `🔒 RANK TREE LR
+Classification:Level 1
+
+===================================
+       Low Rank Tree Overview
+===================================
+
+12th
+6th
+4th
+GSP
+
+12th LR               =  Low Rank (Enlisted)
+Senior Crewman        =  Experienced transport & combat support member
+Junior Crewman        =  Certified basic helicopter crew member
+Crew Assistant        =  Helps pilot & gunner during missions
+Door Gunner Trainee   =  Assists crew, basic weapon handling
+Heli Cadet            =  In training, learning flight safety & troop transport basics
+
+6th LR                          =  Low Rank Enlisted Crew
+Senior Crewman                  =  Experienced crew member
+Driver [Pass Tank Driver Exam]  =  Authorized to operate tank movement systems [Pass Tank Driver Exam]
+Gunner                          =  Authorized to operate main cannon
+Loader Specialist               =  Responsible for ammunition handling
+Crewman                         =  Assigned to a tank crew
+Tank Recruit                    =  Basic training, no tank operation authority
+
+4th LR                  =  Low Rank (Cadets & Ground Crew)
+Senior Airman           =  Certified operational support member
+Junior Jet Specialist   =  Assists in launch prep & diagnostics
+Ground Crew Airman      =  Maintains fighter jets
+Flight Trainee          =  Learning jet controls & air combat basics
+Air Cadet               =  Beginner in jet aviation training
+
+GSP LR               =  Low Rank [Enlisted Infantry]
+Corporal             =  Junior team leader
+Specialist           =  Skilled in weapons or support roles
+Private First Class  =  Experienced enlisted soldier
+Private              =  Standard infantry soldier
+Recruit              =  Basic training / No combat authority without supervision
+
+Important Notes:
+
+LR has Clearance Level 1
+
+Other Important Notes:
+
+You LR can Only Rank up During LR Lerning Lessons
+
+
+`},
+            doc10: {
+                level: 2, text: `🔒 RANK TREE MR
+Classification:Level 2
+
+===================================
+     Medium Rank Tree Overview
+===================================
+
+12th
+6th
+4th
+GSP
+
+12th MR                     =  Medium Rank (Specialists & Pilots)
+Squadrone Sergeant          =  Oversees multiple helicopter crews
+Tactical Flight Specialist  =  Plans air insertion/extraction
+Air Crew Chief              =  Leads crew inside helicopter
+Combat Pilot                =  Handles armed helicopter missions
+Transport Pilot  [Flying Permission] [OFFICIAL PILOT LICENSE CERTIFICAT Needed] [Pass Exam MR] [Can Apply for the MP Division]   =  Flies troop transport helicopters
+
+6th MR                  =  Medium Rank Command Crew
+Operations Officer      =  Coordinates battlefield maneuvers
+Platoon Leader          =  Commands a tank platoon
+Senior Tank Commander   =  Oversees multiple crews
+Tank Commander [Pass Exam MR] [Can Apply for the MP Division]  =   Full authority over assigned tank
+
+4th MR              =  Medium Rank (Active Pilots & Tactical Roles)
+Squadrone Leader    =  Commands a fighter squadron
+Tactical Wingman    =  Elite support pilot in formation combat
+Strike Pilot        =  Ground-attack & precision strike specialist
+Interceptor Pilot   =  Specializes in high-speed interception
+Jet Pilot  [Flying Permission] [OFFICIAL PILOT LICENSE CERTIFICAT Needed] [Pass Exam MR] [Can Apply for the MP Division]  =  Certified fighter jet operator
+
+GSP MR                =  Medium Rank [Non-Commissioned Officers (NCO)]
+First Sergeant        =  Oversees company discipline
+Master Sergeant       =  Senior enlisted advisor
+Sergeant First Class  =  Platoon-level authority
+Staff Sergeant        =  Senior squad commander
+Sergeant [Can Apply for the MP Division]  =  Squad leader
+
+Iprortant Notes:
+
+MR has Clearance Level 2
+
+Other Important Notes:
+
+MR rank up During Events 
+
+
+`},
+            doc11: {
+                level: 3, text: `🔒 RANK TREE HR
+Classification:Level 3
+
+===================================
+      High Rank Tree Overview
+===================================
+
+12th
+6th
+4th
+GSP
+
+12th HR    =  High Rank (Command)
+Supreme Sky General  [Next Rank To Unlock is HIC]  =  Highest authority of Helicopter Troop
+Air Marshal                                        =  Oversees all Furr Army air forces
+WingCommander 12th                                 =  Controls helicopter division
+Air Operation Captain                              =  Coordinates multiple air units
+Flight Lieutenant  [ELITE ACE PILOT CERTIFICATE Needed] [Pass Exam HR]  =  Commands a helicopter squadron
+
+6th HR                =  High Rank Division Command
+High Armored Marshal  =  Highest authority of the Tank Division
+Division Commander    =  Leader of 6th FATD
+Battalion Commander   =  Oversees multiple companies
+Company Commander [Pass Exam HR]  =  Commands tank company
+
+4th HR    =  High Rank (Command Structure)
+Supreme Air Commander  [Next Rank To Unlock is AFI]   =  Highest rank of the 4th Air Furrs Cavalry
+High Air General                                      =  Leads all fighter jet divisions
+Sky Marshal                                           =  Strategic air combat authority
+Wing Commander 4th                                    =  Commands the 4th Air Wing
+Air Cavalry Captain  [ELITE ACE PILOT CERTIFICATE Needed] [Pass Exam HR]  =  Oversees multiple squadrons
+
+GSP HR    =  High Rank [Commissioned Officers]
+Marshal of the Army   =  Highest GSP rank
+General               =  High Army Authority
+Brigadier General     =  Senior field command
+Colonel               =  Regimental commander
+Major                 =  Battalion operations officer
+Captain               =  Company commander
+First Lieutenant      =  Senior platoon leader
+Second Lieutenant     =  Platoon commander
+
+Important Notes:
+
+HR has Clearance Level 3
+
+Other Important Notes:
+
+Hr rank up During Events
+
+
+`},
+            doc12: {
+                level: 3.5, text: `🔒 RANK TREE TDR
+Classification:Level 3.5
+
+=====================================
+ Trainer Division Rank Tree Overview
+=====================================
+
+12th
+6th
+4th
+GSP
+
+12th TDR ---- 12th Training Division Rank
+Head of Air Training Command [Hand Picked] --------------------------------- Leads the entire Helicopter Troop training division
+Chief Flight Examiner [Hand Picked] ---------------------------------------- Oversees all helicopter training programs
+Senior Air Instructor [Hand Picked] ---------------------------------------- Certifies pilots & crew members after evaluation
+Combat Training Officer [Next Rank is DOO [JHC] in Junior High Command] ---- Trains MR pilots in combat maneuvers & weapon systems
+Flight Instructor ---------------------------------------------------------- Trains LR members in helicopter basics & safety
+Heli Instructor Cadet  [OFFICIAL TRAINER CERTIFICATION Needed] [Pass Trainer Exam] --- Assistant trainer, helps supervise basic drills
+
+6th TDR ---- Training Division Rank (Armored Division)
+Head of Armored Training Command [Hand Picked] ------------------------------- Leads all training operations for the 6th FATD Training Division
+Senior Armored Doctrine Officer [Hand Picked] -------------------------------- Develops armored warfare strategies and updates division training protocols
+Field Evaluation Officer [Hand Picked] --------------------------------------- Certifies trainees after live simulation exercises and combat assessments
+Combat Systems Instructor [Next Rank is DOO [JHC] in Junior High Command ] --- Trains MR personnel in advanced weapon systems and armored tactics
+Armored Training Officer ----------------------------------------------------- Teaches tank controls, formation movement, and battlefield coordination
+Assistant Drill Instructor [OFFICIAL TRAINER CERTIFICATION Needed] [Pass Trainer Exam] --- Supports cadet training and supervises basic combat drills
+
+4th TDR ---- 4th Training Division Rank
+Head of Cavalry Training Command [Hand Picked] ------------------------------ Leads all training operations for the 4th Air Furrs Cavalry
+Senior Air Doctrine Officer [Hand Picked] ----------------------------------- Designs air combat strategies and updates training programs
+Advanced Tactics Examiner [Hand Picked] ------------------------------------- Certifies Strike & Interceptor pilots after live combat simulations
+Combat Instructor Pilot [Next Rank is DOO [JHC] in Junior High Command ] ---- Trains MR pilots in dogfighting, missile systems, and air tactics
+Jet Training Officer -------------------------------------------------------- Teaches jet controls, takeoff/landing, and formation flying
+Assistant Flight Instructor  [OFFICIAL TRAINER CERTIFICATION Needed] [Pass Trainer Exam] --- Helps train Air Cadets and supervises basic simulator drills
+
+GSP TDR ---- Ground Service Personal Trainer Division Rank
+Supreme Training Marshal ---------------------------------------------------- Highest authority of Furr Army Training Command
+Exam Authority Officer ------------------------------------------------------ Authorized to issue official exam results
+Lead Trainer ---------------------------------------------------------------- Oversees training events
+Certified Instructor [Next Rank is DOO [JHC] in Junior High Command ] ------- Can conduct LR exams / Can recommend promotions
+Assistant Instructor -------------------------------------------------------- Assists during exams & practical tests
+Training Cadet [OFFICIAL TRAINER CERTIFICATION Needed] [Pass Trainer Exam] --- Learning how to conduct exams / Cannot certify independently
+
+Imprtant Notes:
+
+TDR has Clearance Level 3.5
+
+In Discord Server You have Permission To Rank Up Players To LR MR HR
+
+Other Important Notes:
+
+LR Members can only Rank up During Low Rank Lerning Lessons !!!!
+
+Create Events Like:
+
+LR Lerning Lesson
+
+Division:
+
+Rank:
+
+
+Example
+
+LR Lerning Lesson
+
+12th LR
+
+Heli Cadet
+
+
+
+`},
+
+            doc13: {
+                level: 4, text: `🔒 RANK TREE MP LR
+Classification:Level 4
+
+=====================================
+           MP LR Overview
+=====================================
+
+MP LR ---- Low Rank (Patrol & Enforcement)
+Security Response Officer ------ Responds to emergency situations
+Field Patrol Specialist -------- Handles base security operations
+Senior MP Officer -------------- Conducts detainments & reports
+Military Police Officer -------- Authorized to patrol & issue warnings
+MP Recruit --------------------- Basic MP training / No arrest authority without supervision
+
+Important Notes:
+
+Look in Document 17 For MP Autority Overview
+
+You getting Trained By MP Trainer Command [MP TC]
+
+
+`},
+
+            doc14: {
+                level: 4.2, text: `🔒 RANK TREE MP MR
+Classification:Level 4.2
+
+=====================================
+           MP MR Overview
+=====================================
+
+MP MR ---- Medium Rank (Supervisory & Investigative)
+Deputy Provost Officer ----- Second-in-command of MP operations
+Provost Supervisor --------- Oversees law enforcement procedures
+Tactical Response Leader --- Commands rapid response units
+Investigation Officer ------ Conducts internal investigations
+MP Sergeant [Pass MP MR Exam]  [Can Apply For judge] ---- Leads patrol squads
+
+Improtant Notes:
+
+Look in Document 18 Application For Judge [Military Court Unit]
+
+You getting Trained By Mp Trainer Command [MP TC]
+
+
+`},
+
+            doc15: {
+                level: 4.3, text: `🔒 RANK TREE MP HR
+Classification:Level 4.3
+
+=====================================
+           MP HR Overview
+=====================================
+
+MP HR ---- High Rank (Command Authority)
+Inspector General of Military Justice ----------------- Highest rank within FAMPD / Oversees investigations & disciplinary law
+High Security Marshal  [Can Apply for Classifed ] ----- Supreme authority over discipline & enforcement
+Chief of Military Police ------------------------------ Oversees all MP operations
+Provost Officer [Pass MP HR Exam] --------------------- Division commander of Military Police
+
+Look in Document [Classifed] For Apllying to [Classifed]
+
+You getting Trained By MP Trainer Command [MP TC]
+
+
+
+`},
+
+            doc16: {
+                level: 4.5, text: `🔒 RANK TREE MP TC
+Classification:Level 4.5
+
+=====================================
+           MP TC Overview
+=====================================
+
+MP TC ---- MP Trainer Command
+MP Trainer General -------------- Highest authority of Military Police Trainer Command
+Commandant of MP Training ------- Leads the entire MP Academy
+Training Operations Sergeant ---- Manages academy scheduling and instructor staff
+Senior MP Instructor ------------ Leads classroom and field certification exams
+Junior MP Instructor ------------ Teaches basic law & arrest procedures
+MP Instructor Candidate --------- Under evaluation to become certified trainer / Assists in academy drills
+
+
+`},
+
+            doc17: {
+                level: 4, text: `🔒 MP Authority Overview
+Classification:Level 4
+
+=====================================
+        MP Authority Overview
+=====================================
+
+Overview 1:
+| Rank Tier | Detain    | Arrest          | Suspend   | Recommend Court  |
+| --------- | --------- | --------------- | --------- | ---------------- |
+| LR        | ⚠ Limited | ❌ No            | ❌ No      | ❌ No             |
+| MR        | ✅ Yes     | ⚠ With evidence | ⚠ Limited | ✅ Yes            |
+| HR        | ✅ Yes     | ✅ Yes           | ✅ Yes     | ✅ Full Authority |
+
+Overview 2:
+🚨 FURR ARMY MILITARY POLICE DIVISION
+MP Arrest & Discipline Handbook
+
+Classification: Official Enforcement Doctrine
+Applies To: All FAMPD Personnel
+
+I. PURPOSE
+
+The purpose of the Military Police Division is to:
+
+Maintain order and discipline
+
+Protect all Furr Army personnel
+
+Enforce official rules and regulations
+
+Conduct lawful investigations
+
+Uphold fairness and professionalism
+
+MP authority exists to protect, not intimidate.
+
+II. MP CODE OF CONDUCT
+
+All MP personnel must:
+
+Act professionally at all times
+
+Remain neutral and unbiased
+
+Use minimum force necessary
+
+Document all enforcement actions
+
+Respect chain of command
+
+Never abuse authority
+
+Violation of this code results in investigation and possible removal.
+
+III. LEVELS OF DISCIPLINARY ACTION
+🟢 Level 1 – Verbal Warning
+
+Used for:
+
+Minor misconduct
+
+First-time offenses
+
+Minor disrespect
+
+Procedure:
+
+Issue warning clearly
+
+Log warning in report system
+
+🟡 Level 2 – Formal Written Warning
+
+Used for:
+
+Repeated minor misconduct
+
+Disruptive behavior
+
+Procedure:
+
+Document incident
+
+Notify MR+ MP supervisor
+
+🟠 Level 3 – Detainment
+
+Used for:
+
+Refusal to follow lawful orders
+
+Active disruption
+
+Security risk behavior
+
+Procedure:
+
+Clearly state reason for detainment
+
+Escort subject to holding area
+
+Document incident
+
+Notify MR+ command
+🔴 Level 4 – Arrest
+
+Used for:
+
+Major rule violations
+
+Severe misconduct
+
+Threats to base security
+
+Abuse of rank
+
+Procedure:
+
+State charges clearly
+
+Secure the individual
+
+Inform HR+ MP authority
+
+File full incident report
+
+Recommend disciplinary action
+
+⚫ Level 5 – Suspension Recommendation
+
+Used for:
+
+Severe abuse of power
+
+Repeated misconduct
+
+Sabotage or corruption
+
+Only HR+ may approve suspension.
+
+IV. ARREST PROCEDURE (STANDARD PROTOCOL)
+
+Identify yourself as Military Police
+
+State the violation
+
+Give one lawful compliance opportunity
+
+If non-compliant → detain
+
+Escort safely
+
+File official report
+
+MPs must never:
+
+Arrest without reason
+
+Use personal bias
+
+Publicly humiliate suspects
+
+Ignore evidence
+
+V. USE OF FORCE POLICY
+
+Force must be:
+
+Necessary
+
+Proportional
+
+Authorized
+
+Escalation Scale:
+
+Verbal Command
+
+Warning
+
+Detainment
+
+Arrest
+
+Excessive force = automatic Internal Affairs review.
+
+VI. INTERNAL AFFAIRS & MP DISCIPLINE
+
+If an MP:
+
+Abuses authority
+
+Makes false arrests
+
+Shows bias
+
+Harasses members
+
+An Internal Affairs investigation will begin.
+
+Possible consequences:
+
+Demotion
+
+Suspension
+
+Removal from MP Division
+
+Permanent rank restriction
+
+VII. CHAIN OF AUTHORITY
+Rank Tier    Authority Level
+LR    Patrol & Warning
+MR    Arrest & Investigation
+HR    Suspension & Division Authority
+
+High Security Marshal & Inspector General have ultimate enforcement oversight.
+
+VIII. REPORTING FORMAT
+
+Every enforcement action must include:
+
+Name of subject
+
+Rank
+
+Violation committed
+
+Evidence
+
+Witnesses
+
+Action taken
+
+MP Signature
+
+Failure to document = policy violation.
+
+IX. FINAL PRINCIPLE
+
+Military Police power is built on:
+
+⚖ Fairness
+🛡️ Integrity
+📜 Discipline
+👑 Responsibility
+
+Without discipline, there is no order.
+Without fairness, there is no justice.
+
+
+`},
+
+            doc18: {
+                level: 4.2, text: `🔒 Application For Judge Military Court Unit
+Classification:Level 4.2
+
+===========================================
+ Application For Judge Military Court Unit
+===========================================
+
+Application Requirements (For MR Applicants)  HR MP  MR MP:
+
+To join Military Court Unit:
+
+Minimum 14 days as MR
+
+No disciplinary record
+
+Pass Legal Conduct Exam
+
+Pass Courtroom Conduct Simulation
+
+Approved by MP HR
+
+Optional:
+
+Prior investigation experience
+Hierarchy Placement
+
+Supreme Command Arbiter (Owner)
+↓
+High Tribunal Executor (Co-Owner)
+↓
+Grand Court Justicar (Right Hand)
+↓
+Chief Military Judge
+↓
+Senior Court Judge
+↓
+Military Judges
+
+
+🥇 TIER V – Court Command
+1️⃣ Chief Military Judge
+
+Must be MP HR
+
+Oversees all Military Court operations
+
+Approves sentencing above 30-day suspension
+
+Reports to MP High Command
+
+Only one per facility.
+
+2️⃣ Senior Court Judge
+
+Presides over MR-level trials
+
+Can issue rank suspension
+
+Can recommend demotion
+
+Oversees legal conduct
+
+⚖ TIER IV – Trial Authority
+3️⃣ Military Judge (MR+)
+
+Leads LR and minor MR hearings
+
+Determines guilt or innocence
+
+Issues penalties within authority
+
+This is the main role MR officers apply for.
+
+4️⃣ Court Prosecutor (MR+)
+
+Represents Military Police
+
+Presents evidence
+
+Works with FAISD reports
+
+Requests sentencing
+
+5️⃣ Defense Officer (MR+)
+
+Represents accused
+
+Reviews evidence integrity
+
+Ensures lawful procedure
+
+Prevents abuse of authority
+
+🛡 TIER III – Court Enforcement MR+
+6️⃣ Court Marshal
+
+Maintains order in courtroom
+
+Escorts accused
+
+Enforces sentencing
+
+Authorized to restrain
+
+7️⃣ Evidence Officer
+
+Handles documentation
+
+Maintains bodycam records
+
+Verifies timestamp logs
+
+Secures classified evidence
+
+📜 TIER II – Administrative MR+
+8️⃣ Court Clerk
+
+Schedules hearings
+
+Records verdicts
+
+Updates disciplinary logs
+
+
+ALL Judge Ranks:
+
+Chief Military Judge
+Senior Court Judge
+Military Judge
+Court Prosecutor
+Defense Officer
+Court Marshal
+Evidence Officer
+Court Clerk
+
+
+`},
+
+            doc19: {
+                level: 4.9, text: `🔒 FAMCU COURT SYSTEM
+Classification:Level 4.9
+
+⚖ FURR ARMY MILITARY COURT SYSTEM
+
+Judicial Authority of the Furr Army
+
+Applies to all divisions:
+
+12th Helicopter Troop
+
+4th Air Furrs Cavalry
+
+6th FATD Tank Division
+
+FAGSP Ground Service
+
+All High Command Personnel
+
+I. PURPOSE OF THE MILITARY COURT
+
+The Military Court exists to:
+
+Ensure fair trials
+
+Prevent abuse of authority
+
+Maintain discipline
+
+Protect rank integrity
+
+Enforce justice across all divisions
+
+The court operates independently from standard MP patrol authority.
+
+II. COURT AUTHORITY STRUCTURE
+🟢 Court Officials (LR Tier)
+
+Court Clerk
+
+Records proceedings
+
+Maintains case files
+
+Legal Assistant
+
+Assists prosecution or defense
+
+🔵 Judicial Officers (MR Tier)
+
+Military Prosecutor
+
+Presents charges
+
+Submits evidence
+
+Defense Officer
+
+Represents accused personnel
+
+Magistrate Officer
+
+Oversees minor trials
+
+Issues minor disciplinary rulings
+
+🔴 High Judicial Command (HR Tier)
+
+Military Judge
+
+Presides over court hearings
+
+Determines verdicts
+
+Chief Military Judge
+
+Oversees all court operations
+
+High Justice Marshal
+
+Supreme legal authority
+
+Can overturn decisions
+
+Final appeal authority
+
+III. TYPES OF COURT CASES
+🟢 Minor Offense Hearings
+
+Examples:
+
+Disrespect
+
+Minor insubordination
+
+Repeated warnings
+
+Handled by: Magistrate Officer
+
+Possible outcomes:
+
+Formal warning
+
+Rank freeze
+
+Temporary restriction
+
+🟡 Major Discipline Trials
+
+Examples:
+
+Abuse of rank
+
+Reckless command decisions
+
+Repeated misconduct
+
+Handled by: Military Judge
+
+Possible outcomes:
+
+Demotion
+
+Suspension
+
+Removal from division
+
+🔴 High Command Trials
+
+Examples:
+
+Corruption
+
+Power abuse
+
+Sabotage
+
+False arrests
+
+Handled by: Chief Military Judge + High Justice Marshal
+
+Possible outcomes:
+
+Permanent removal
+
+Rank strip
+
+Command ban
+IV. TRIAL PROCEDURE
+
+Charges submitted by MP or HR
+
+Evidence collected and documented
+
+Accused is notified
+
+Defense assigned
+
+Hearing scheduled
+
+Evidence presented
+
+Final ruling announced
+
+All trials must be documented.
+
+V. RIGHTS OF THE ACCUSED
+
+Every accused member has the right to:
+
+Know the charges
+
+See evidence
+
+Speak in defense
+
+Request representation
+
+Appeal to High Justice Marshal
+
+No punishment without review.
+
+VI. APPEALS PROCESS
+
+Appeals may be requested within 48 hours.
+
+Appeal Levels:
+
+Judge Review
+
+Chief Military Judge Review
+
+High Justice Marshal (Final Decision)
+
+Decision of High Justice Marshal is final.
+
+VII. SPECIAL LEGAL RULES
+
+No MP may judge their own case
+
+No HR may remove rank without review
+
+Evidence tampering = automatic HR investigation
+
+False accusations result in disciplinary action
+
+VIII. COURT PUNISHMENT SCALE
+Level    Action
+1    Verbal Warning
+2    Formal Warning
+3    Rank Freeze
+4    Demotion
+5    Suspension
+6    Removal from Division
+7    Permanent Ban
+IX. CORE PRINCIPLE
+
+Justice in the Furr Army must be:
+
+⚖ Fair
+🛡 Controlled
+📜 Documented
+👑 Accountable
+
+Power without oversight creates corruption.
+The Military Court exists to prevent it.
+
+⚖ Court Trial Flow
+
+Charges Filed
+
+Evidence Reviewed
+
+Hearing Scheduled
+
+Prosecutor & Defense Statements
+
+Witness Testimony
+
+Judge Deliberation
+
+Verdict Issued
+
+Sentencing Recorded
+
+
+`},
+
+            doc20: {
+                level: 5, text: `🔒 FAJD Furr Army Journalist Division Infomation
+Classification:Level 5
+
+Furr Army Journalist Division
+Division Role
+
+The Furr Army Journalist Division is responsible for documenting military operations, reporting important events,
+and delivering official news across the Furr Army and allied organizations like Reelmind Corporation.
+
+They serve as the official voice and historical record of the Furr Army.
+
+🎥 Main Responsibilities
+
+News Broadcasting
+
+Publish official army news
+
+report updates to soldiers and civilians
+
+Historical Documentation
+
+Record major historical events
+
+maintain archives of military campaigns
+
+Media Production
+
+produce photos and videos
+
+create documentaries about the Furr Army
+
+Public Communication
+
+deliver official announcements
+
+support alliance communication with Reelmind Corp.
+
+Director of Military Media
+Chief Military Journalist
+Media Operations Officer
+Senior War Correspondent
+Field Reporter
+Journalist Recruit
+
+
+`},
+
+            doc21: {
+                level: 6, text: `🔒 FAIDS Classifed Information Furr Army Internal Service Division
+Classification:Level 6 [ISD]
+
+Furr Army Internal Service Division
+
+🔹 LR – Low Rank (Field Agents)
+
+ISD Recruit
+
+Junior Internal Officer
+
+Internal Service Officer
+
+Senior Internal Officer
+
+🔹 MR – Mid Rank (Investigators / Supervisors)
+
+Lead Internal Officer
+
+Internal Investigator
+
+Senior Investigator
+
+Internal Operations Supervisor
+
+🔹 HR – High Rank (Command / Oversight)
+
+Deputy Director of Internal Service
+
+Director of Internal Service
+
+Chief Internal Commissioner
+
+FAISD Commander
+
+
+
+
+📜 FAISD – Official Lore
+
+After the early expansion of the Furr Army, rapid growth created power… but also instability.
+
+Promotions were rising.
+Divisions were forming.
+Lockdown protocols were increasing.
+
+And with power came risk.
+
+To prevent corruption, betrayal, and internal collapse, High Command authorized the formation of a classified oversight body:
+
+FAISD — The Internal Service Division.
+
+They were not created to fight enemies outside the Army.
+
+They were created to protect the Army from itself.
+
+🕶 The Hidden Mandate
+
+FAISD operates under three primary directives:
+
+Internal Security Enforcement
+Monitoring divisions for misconduct or disloyalty.
+
+Command Integrity Audits
+Investigating abuse of authority across LR, MR, and HR ranks.
+
+Crisis Stabilization Protocol
+During Code Red or Code Black, FAISD ensures loyalty inside the base.
+
+⚠ The Incident That Changed Everything
+
+Rumors speak of an early internal breach during a Level 4 emergency.
+
+An officer failed to follow lockdown procedure.
+
+Security doors remained open.
+
+The base nearly collapsed.
+
+From that day forward, FAISD authority expanded.
+
+No rank became immune to oversight.
+
+Not even Command.
+
+🔒 Clearance System
+
+FAISD operates on classified clearance levels:
+
+White Clearance – Basic Information
+
+Yellow Clearance – Operational Review Access
+
+Orange Clearance – Internal Case Files
+
+Red Clearance – Command Oversight
+
+Black Clearance – Restricted. Eyes Only.
+
+Only FAISD HR ranks may access Black files.
+
+🛡 Relationship With Other Divisions
+
+GSP respects FAISD — but fears investigations.
+
+MP cooperates with FAISD — but does not control them.
+
+AFC oversees the Army — but FAISD can investigate AFC.
+
+4th AFC & 12th FAHT provide transport when FAISD requires rapid intervention.
+
+FAISD does not request permission.
+
+They notify.
+
+🕯 Public vs Reality
+
+Officially:
+
+FAISD ensures discipline and order.
+
+Unofficially:
+
+FAISD ensures survival of the Army.
+
+🔥 Cinematic Tagline
+
+“Loyalty is proven.
+Discipline is enforced.
+Integrity is monitored.”
+
+
+`},
+
+            doc22: {
+                level: 6.5, text: `🔒 FAIA Classifed Information Furr Army Intelligence Agency
+classification:Level 6.5 [IA]
+
+“Knowledge Is Power.”
+
+🔹 LR – Intelligence Operatives (Entry & Field Level)
+
+Intelligence Recruit
+
+Junior Intelligence Operative
+
+Field Intelligence Officer
+
+Signals Intelligence Specialist
+
+🔹 MR – Analysts & Tactical Planners
+
+Senior Intelligence Officer
+
+Lead Field Agent
+
+Intelligence Analyst
+
+Operations Planner
+
+Section Chief
+
+🔹 HR – Strategic Command Level
+
+Deputy Director of Intelligence
+
+Director of Intelligence Operations
+
+Chief Strategic Analyst
+
+Intelligence Commander
+
+Director-General of FAIA
+
+
+🧩 FAIA Core Responsibilities
+
+External threat monitoring
+
+Recon operations
+
+Cyber surveillance
+
+Tactical battlefield intelligence
+
+Threat prediction
+
+Code escalation recommendations
+
+FAIA is usually the first to recommend:
+
+Code Yellow
+
+Code Orange
+
+Code Red
+
+They see the threat before others do.
+
+🔒 Clearance Structure 
+
+FAIA members operate under classified levels:
+
+Level I – Restricted
+
+Level II – Tactical
+
+Level III – Strategic
+
+Level IV – Command Access
+
+Level V – Black Archive
+
+Only Director-General level can access Level V.
+
+🔥 Motto Ideas
+
+“Information Wins Wars.”
+
+“We See First.”
+
+“Silent. Aware. Precise.”
+
+“From Shadows, We Guide.”
+
+“The Battle Begins With Intelligence.”
+
+Now your Army structure is becoming advanced:
+
+GSP – Main Army
+
+MP – Military Police
+
+AFC – High Command
+
+4th AFC – Jet Division
+
+6th FATD – Tank Division
+
+12th FAHT – Helicopter Troop
+
+FAISD – Internal Oversight
+
+FAIA – Intelligence Agency
+
+
+
+
+
+
+
+
+📜 Origin of FAIA
+
+Before the Furr Army became a structured force…
+
+Threats were reacted to — not predicted.
+
+Raids caught divisions unprepared.
+Lockdowns were triggered too late.
+Command decisions were made without full information.
+
+After a near-catastrophic security breach during an early expansion phase, High Command realized something critical:
+
+Strength without intelligence is weakness.
+
+From that realization, FAIA was born.
+
+Not as a combat unit.
+Not as police.
+But as the mind of the Army.
+
+🕶 The Silent Network
+
+FAIA operates quietly.
+
+They monitor:
+
+External military groups
+
+Rival armies
+
+Internal communication patterns
+
+Base security vulnerabilities
+
+Cyber threats
+
+Escalation risks
+
+Most soldiers never see FAIA working.
+
+But FAIA sees everyone.
+
+⚠ The First Intelligence Crisis
+
+Classified archives speak of an incident known only as:
+
+“The 7-Minute Delay.”
+
+An unknown hostile group attempted a coordinated infiltration.
+
+FAIA intercepted fragmented signals.
+
+Analysis predicted a 7-minute window before breach.
+
+That early warning allowed:
+
+GSP to mobilize
+
+12th FAHT to prepare air support
+
+6th FATD to secure heavy access points
+
+The attack failed.
+
+From that day, FAIA authority expanded.
+
+🔒 The Black Archive
+
+Deep within the command structure exists:
+
+The Black Archive.
+
+Files marked:
+
+Unconfirmed threats
+
+Internal risk assessments
+
+High Command vulnerability projections
+
+Future escalation models
+
+Only the Director-General of FAIA and select AFC leaders have access.
+
+Some say FAIA already knows the next crisis before it begins.
+
+🧩 Relationship With Other Divisions
+
+GSP fights the battles.
+
+FATD breaks the lines.
+
+FAHT deploys rapidly.
+
+4th AFC controls the sky.
+
+MP enforces law.
+
+FAISD protects internal order.
+
+But FAIA decides when those forces move.
+
+They recommend Code Yellow.
+They predict Code Red.
+They prepare for Code Black.
+
+🌑 Rumors & Theories
+
+Whispers circulate inside the Army:
+
+FAIA has undercover agents embedded in every division.
+
+Some promotions are influenced by intelligence reports.
+
+FAIA may test loyalty without soldiers knowing.
+
+Certain “training scenarios” were never training at all.
+
+Officially, these rumors are denied.
+
+Unofficially… no one knows.
+
+🔥 Cinematic Tagline
+
+“Wars are not won on the battlefield.
+They are won in information.”
+
+
+
+`},
+
+            doc23: {
+                level: 7, text: `🔒 Vanguard Operations Regiment Information
+classification:Level 7 [V.O.R]
+
+Direct Authority: Grand High Command (GHC)
+Status: Black-Omega Classified
+
+🏛 Command Alignment
+
+F.A.V.O.R. does NOT answer to:
+
+MP High Command
+
+FAISD
+
+FAIA
+
+Division Generals
+
+They answer only to:
+
+👑 Grand High Command
+
+Orders flow like this:
+
+Grand High Command
+↓
+Obsidian Prime
+↓
+Vanguard Marshal
+↓
+Operational Cells
+
+No lateral interference permitted.
+
+⚫ Structural Adjustment
+
+Since they’re under GHC, the Obsidian Council becomes:
+
+🜏 The Black Chamber
+🔹 Obsidian Prime
+
+Personally appointed by Grand High Command
+
+Holds Black Key Alpha
+
+Can act in the name of GHC during total communication failure
+
+🔹 Four Obsidian Arbiters
+
+Advisors to Prime
+
+Tactical and strategic execution planners
+
+Each holds a fragment of Warhead Lock Override
+
+They do NOT outvote Grand High Command.
+They execute its will.
+
+🔐 Authority Level
+
+When F.A.V.O.R. activates:
+
+HR officers cannot countermand them
+
+FAISD investigations are suspended
+
+FAIA data streams are mirrored automatically
+
+Warhead launch requires their presence
+
+They are the enforcement of final order.
+
+🩸 Political Position in Lore
+
+Officially:
+
+“F.A.V.O.R. is a specialized rapid response unit.”
+
+Reality:
+
+They are the contingency plan if the Army fractures.
+
+Grand High Command created them after:
+
+The first internal corruption crisis
+
+A near Warhead misfire event
+
+A command betrayal during Code Red
+
+They are insurance.
+
+🜂 Special Clause
+
+If Grand High Command is compromised…
+
+Obsidian Prime may invoke:
+
+⚫ BLACK THRONE DIRECTIVE
+
+Temporary autonomous authority
+Until GHC integrity is restored
+
+This is logged once in history.
+
+No records remain.
+
+🔥 Their Motto (Updated)
+
+“By Command. Through Shadow.”
+
+
+`},
+
+            doc24: {
+                level: 7, text: `🔒 Vanguard Operations Regiment Ranks:
+classification:Level 7 [V.O.R]
+
+🜏 TIER VII – Grand Command Oversight
+1️⃣ Grand High Commander (External Authority)
+
+Supreme authority over Vanguard
+
+Can appoint or remove Obsidian Prime
+
+Holds Black Key Prime
+
+Cannot be countermanded
+
+(This rank is outside F.A.V.O.R. but above it.)
+
+⚫ TIER VI – Black Chamber Command
+2️⃣ Obsidian Prime
+
+Supreme Commander of Vanguard
+
+Direct voice of Grand High Command
+
+Controls Black Activation Protocol
+
+Can authorize Warhead Lock Intervention
+
+Only one.
+
+3️⃣ Obsidian Arbiter (×4)
+
+Strategic execution authority
+
+Each controls a Black Key Fragment
+
+Approve major neutralization operations
+
+Can activate multi-cell deployment
+
+⚔ TIER V – Strategic Operations
+4️⃣ Vanguard Marshal
+
+Oversees all field and cyber divisions
+
+Executes Council decisions
+
+Controls operational readiness state
+
+5️⃣ Black Directive Officer
+
+Mission architects
+
+Counterintelligence planners
+
+Crisis scenario simulation commanders
+
+🩸 TIER IV – Field Command
+6️⃣ Cell Commander
+
+Leads 3–5 operator unit
+
+Autonomous engagement authority
+
+Can authorize lethal force without delay
+
+Direct uplink to Vanguard Marshal
+
+Callsign: VC-01, VC-02, etc.
+
+🩶 TIER III – Operators
+7️⃣ Vanguard Operator
+
+Elite tactical operative
+
+Trained in:
+
+Counterintelligence
+
+Facility reclamation
+
+Close quarters combat
+
+Warhead security systems
+
+Callsign format: V-11, V-24, etc.
+
+8️⃣ Silent Operator
+
+Stealth and infiltration specialist
+
+Data extraction
+
+Target tracking
+
+Internal surveillance
+
+No public callsign.
+
+🧠 TIER II – Intelligence & Control
+9️⃣ Silent Analyst
+
+Oversees digital warfare
+
+Monitors FAIA & FAISD channels
+
+Verifies Warhead code integrity
+
+Can freeze command logs
+
+🔟 Ghost Archivist
+
+Maintains erased records
+
+Controls identity nullification
+
+Protects Obsidian-level secrets
+
+They do not deploy.
+
+They remember.
+
+🜂 TIER I – Initiate
+1️⃣1️⃣ Shadow Candidate
+
+Selected, not applied
+
+Undergoes identity erasure
+
+Completes “Black Silence Trial”
+
+Failure = reassignment
+Success = record deletion + rank assignment
+
+⚫ Special Operational Status
+☠ The Null
+
+Activated only during catastrophic internal collapse
+
+Answers directly to Obsidian Prime
+
+Can override Cell Commanders
+
+Exists outside normal hierarchy
+
+Only one active at a time.
+
+🔐 Rank Philosophy
+
+No visible insignia
+
+Authority verified by encrypted key signature
+
+Lower visible rank may outrank higher if holding a higher Black Key
+
+Orders authenticated via Black Chamber Cipher
+
+
+`},
+
+            doc25: {
+                level: 8, text: `🔒 Junior High Command
+classification:Level 8
+
+Rank:
+
+Air & Ground Coordinator [Highest possible rank] ----- Coordinates jets, helicopters, and tanks
+
+Strategic Liaison Officer ---------------------------- Connects 12th, 4th, and 6th divisions
+
+Deputy Operations Officer ---------------------------- Assists division commanders and Oversees cross-division coordination
+
+
+`},
+
+            doc26: {
+                level: 9, text: `🔒 Senior High Command
+classification:Level 9
+
+Rank:
+
+Supreme Tactical Commander [Hand Picked] ------ Authority over large-scale operations
+ 
+Chief of Division Operations [Hand Picked] ---- Supervises all division commanders
+
+High Command Officer [Hand Picked] ------------ Senior strategic planner
+
+
+`}
+
+                };
+
+                /* LOGIN */
+
+                function login() {
+
+                    let user = document.getElementById("user").value;
+                    let pass = document.getElementById("pass").value;
+
+                    if (users[user] && users[user].password === pass) {
+
+                        currentUser = users[user];
+
+                        document.querySelector(".login-panel").style.display = "none";
+                        document.getElementById("bootScreen").classList.remove("hidden");
+
+                        startBoot();
+
+                    } else {
+
+                        attempts++;
+
+                        document.getElementById("status").innerText =
+                            "ACCESS DENIED (" + attempts + "/3)";
+
+                        if (attempts >= 3) {
+                            triggerLockdown();
+                        }
+
+                    }
+
+                }
+
+                /* LOCKDOWN */
+
+                function triggerLockdown() {
+
+                    document.querySelector(".login-panel").style.display = "none";
+
+                    document.getElementById("lockdownScreen").classList.remove("hidden");
+
+                    let fill = document.getElementById("lockFill");
+                    let countdown = document.getElementById("countdown");
+
+                    let progress = 0;
+                    let time = 20;
+
+                    let interval = setInterval(() => {
+
+                        progress += 5;
+                        fill.style.width = progress + "%";
+
+                        time--;
+                        countdown.innerText = time;
+
+                        if (time <= 0) {
+                            clearInterval(interval);
+                            location.reload();
+                        }
+
+                    }, 1000);
+
+                }
+
+                /* BOOT SEQUENCE */
+
+                function startBoot() {
+
+                    let progress = 0;
+                    let bar = document.getElementById("progressBar");
+                    let text = document.getElementById("bootText");
+
+                    let messages = [
+                        "Connecting to Reelmind Servers...",
+                        "Initializing Security Protocols...",
+                        "Loading FurrArmy Divisions...",
+                        "Checking FAIA Intelligence Network...",
+                        "Starting Command Terminal..."
+                    ];
+
+                    let messageIndex = 0;
+
+                    let interval = setInterval(() => {
+
+                        progress++;
+
+                        bar.style.width = progress + "%";
+
+                        if (progress % 20 === 0 && messageIndex < messages.length) {
+                            text.innerText = messages[messageIndex];
+                            messageIndex++;
+                        }
+
+                        if (progress >= 100) {
+
+                            clearInterval(interval);
+
+                            document.getElementById("bootScreen").style.display = "none";
+                            document.getElementById("terminal").classList.remove("hidden");
+
+                            boot();
+
+                        }
+
+                    }, 600);
+
+                }
+
+                /* TERMINAL BOOT */
+
+                function boot() {
+
+                    let lines = [
+                        "Connecting to Reelmind Servers...",
+                        "Authenticating Operator...",
+                        "Rank: " + currentUser.rank,
+                        "Team: " + currentUser.team,
+                        "Clearance Level: " + currentUser.clearance,
+                        "Access Granted."
+                    ];
+
+                    let output = document.getElementById("output");
+
+                    let i = 0;
+
+                    let interval = setInterval(() => {
+
+                        output.innerHTML += lines[i] + "\n";
+
+                        i++;
+
+                        if (i >= lines.length) {
+
+                            clearInterval(interval);
+                            document.getElementById("docButtons").classList.remove("hidden");
+                            updateDocumentButtons();
+
+
+                        }
+
+                    }, 700);
+
+                }
+
+                /* TERMINAL TYPEWRITER EFFECT */
+
+                function typeText(text, elementId, speed = 20) {
+
+                    let element = document.getElementById(elementId);
+                    element.innerText = "";
+
+                    let i = 0;
+
+                    function typing() {
+
+                        if (i < text.length) {
+                            element.innerText += text.charAt(i);
+                            i++;
+                            setTimeout(typing, speed);
+                        }
+
+                    }
+
+                    typing();
+
+                }
+
+                /* DOCUMENT VIEW */
+
+                function showDocument(doc) {
+
+                    let file = documents[doc];
+
+                    if (currentUser.clearance < file.level) {
+
+                        typeText(
+                            "ACCESS DENIED\nREQUIRED CLEARANCE LEVEL: " + file.level,
+                            "output",
+                            25
+                        );
+
+                        return;
+
+                    }
+
+                    typeText(file.text, "output", 20);
+
+                }
+
+    </script>
+
+</body>
+</html>
